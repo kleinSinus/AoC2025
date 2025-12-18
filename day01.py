@@ -1,5 +1,5 @@
-#file = open("test01.txt") # file with smaller test input
-file = open("input01.txt")
+#file = open("input/test01.txt") # file with smaller test input
+file = open("input/input01.txt")
 
 dial = 50 # initialize dial at value 50
 zeroCount = 0 # initialize zero count

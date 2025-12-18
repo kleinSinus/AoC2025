@@ -1,5 +1,5 @@
-#file = open("test04.txt")
-file = open("input04.txt")
+#file = open("input/test04.txt")
+file = open("input/input04.txt")
 
 grid = []
 

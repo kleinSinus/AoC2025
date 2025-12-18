@@ -1,5 +1,5 @@
-#file = open("test05.txt")
-file = open("input05.txt")
+#file = open("input/test05.txt")
+file = open("input/input05.txt")
 
 freshRangesParsed = False
 freshnessLimits = []
@@ -36,58 +36,78 @@ for ingredient in ingredients:
 
 print(countFresh)
 
-mergeLimits = freshnessLimits.copy()
+freshnessLimits2 = freshnessLimits.copy()
 
-for range in mergeLimits: # fix ordering of start and finish just in case
-    if range[0] > range[1]:
-        temp = range[0]
-        range[0] = range[1]
-        range[1] = temp
+# order individual items in a list of ranges such that start <= end any time
+def fixOrdering(rangeList):
+    for range in rangeList: # fix ordering of start and finish just in case
+        start = range[0]
+        end = range [1]
+        if start > end: # flip if start after end
+            range[0] = end
+            range[1] = start
 
-# merges a pair of ranges from a list of ranges if they overlap
-# returns mergeability
-def mergeRanges(i, j, rangeList):
-    i0 = rangeList[i][0]
-    i1 = rangeList[i][1]
-    j0 = rangeList[j][0]
-    j1 = rangeList[j][1]
-    #print(rangeList)
-    #print("Merging [" + str(i0) + ", " + str(i1) + "] with [" + str(j0) + ", " + str(j1) + "]")
-    new0 = min(i0,i1,j0,j1)
-    new1 = max(i0,i1,j0,j1)
-    canMerge = True
-    # I < J: we cannot merge if i0 < i1 < j0 < j1 and i1 < j0 - 1, analogous for J < I
-    if ((i0 < i1) and (i1 < j0) and (j0 < j1) and (i1 < (j0-1))) or ((j0 < j1) and (j1 < i0) and (i0 < i1) and (j1 < (i0-1))):
-        canMerge = False
-    if canMerge:
-        del rangeList[j]
-        del rangeList[i]
-        rangeList.append([new0, new1])
-    #print(rangeList)
-    #print('')
-    return canMerge
-
-def mergeRangeList(rangeList):
-    iterI = 0
-    iterJ = 1
-    while (iterI < iterJ):
-        if iterJ < len(rangeList): # make sure to not be out of bound
-           merged = mergeRanges(iterI, iterJ, rangeList) # try to merge current two ranges
-        # iterator handling to compare each pair of ranges
-        if (iterJ == len(rangeList)): # secondary iterator reached end of list
-            iterI += 1
-            iterJ = min(len(rangeList), iterI+1) # restart secondary iterator at primary+1 or keep at end of list if exceeded to ensure iterI==iterJ
+# for two ranges checks whether they can be merged
+def mergePossible(rangeA, rangeB):
+    a0 = rangeA[0]
+    a1 = rangeA[1]
+    b0 = rangeB[0]
+    b1 = rangeB[1]
+    if (a0 < a1) and (a1 < b0) and (b0 < b1): # two separate ranges, A < B
+        if (b0 == (a1 + 1)): # B continues right where a left off
+            return True
         else:
-            iterJ += 1
-        if merged: # successful merge changes list structure -> reset iteration
-            iterI = 0
-            iterJ = 1
+            return False
+    else: # there must be some overlap
+        return True
+
+# for two ranges with assumed overlap, return merge product
+# for ranges without overlap, merge product will include the space between
+def mergeRanges(rangeA, rangeB):
+    a0 = rangeA[0]
+    a1 = rangeA[1]
+    b0 = rangeB[0]
+    b1 = rangeB[1]
+    new0 = min(a0,a1,b0,b1)
+    new1 = max(a0,a1,b0,b1)
+    return [new0, new1]
+
+# input: list of ranges
+# function: merge ranges where possible within the input list
+def mergeRangeList(rangeList):
+    #print(rangeList)
+    iterA = 0
+    iterB = 1
+    while (iterA < iterB):
+        #print(iterA, iterB, len(rangeList))
+        mergeable = False
+        if (iterB < len(rangeList)): # make sure to not be out of bound
+            mergeable = mergePossible(rangeList[iterA], rangeList[iterB])
+        if mergeable:
+            rangeA = rangeList[iterA]
+            rangeB = rangeList[iterB]
+            mergeProd = mergeRanges(rangeA, rangeB) # merge current two ranges
+            del rangeList[iterB]
+            del rangeList[iterA]
+            rangeList.append(mergeProd)
+            # reset iterators
+            iterA = 0
+            iterB = 1
+        # iterator handling to compare each pair of ranges
+        else:
+            if (iterB == len(rangeList)): # 2nd iterator reached end of list
+                iterA += 1
+                iterB = min(len(rangeList), iterA+1) # reset 2nd iterator
+            else:
+                iterB += 1
     print(rangeList)
     print(len(rangeList))
 
-mergeRangeList(mergeLimits)
+
+fixOrdering(freshnessLimits2)
+mergeRangeList(freshnessLimits2)
 
 sumFresh = 0
-for limit in mergeLimits:
+for limit in freshnessLimits2:
     sumFresh += (limit[1] - limit[0] + 1)
 print(sumFresh)

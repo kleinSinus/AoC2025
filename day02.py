@@ -1,7 +1,7 @@
 import math
 
-#file = open("test02.txt")
-file = open("input02.txt")
+#file = open("input/test02.txt")
+file = open("input/input02.txt")
 
 lines = []
 for line in file:
