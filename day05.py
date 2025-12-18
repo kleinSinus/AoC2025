@@ -1,5 +1,5 @@
-file = open("test05.txt")
-#file = open("input05.txt")
+#file = open("test05.txt")
+file = open("input05.txt")
 
 freshRangesParsed = False
 freshnessLimits = []
@@ -38,78 +38,51 @@ print(countFresh)
 
 mergeLimits = freshnessLimits.copy()
 
-# merges a pair of ranges from a list of ranges if they overlap, returns mergability
+for range in mergeLimits: # fix ordering of start and finish just in case
+    if range[0] > range[1]:
+        temp = range[0]
+        range[0] = range[1]
+        range[1] = temp
+
+# merges a pair of ranges from a list of ranges if they overlap
+# returns mergeability
 def mergeRanges(i, j, rangeList):
     i0 = rangeList[i][0]
     i1 = rangeList[i][1]
     j0 = rangeList[j][0]
     j1 = rangeList[j][1]
-    new0 = 0
-    new1 = 1
-    countNewMerges = 0
-    overlapFound = False
-    if (i0 < i1) and (i1 < j0) and (j0 < j1) and (i1 == (j0-1)): # touching I < J
-        overlapFound = True
-        new0 = i0
-        new1 = j1
-    elif (j0 < j1) and (j1 < i0) and (i0 < i1) and (j1 == (i0-1)): # touching J < I
-        overlapFound = True
-        new0 = j0
-        new1 = i1
-    elif (i0 < j0) and (j0 < i1) and (i1 < j1): # overlap I < J
-        overlapFound = True
-        new0 = i0
-        new1 = j1
-    elif (j0 < i0) and (i0 < j1) and (j1 < i1): # overlap J < I
-        overlapFound = True
-        new0 = j0
-        new1 = i1
-    elif (i0 < j0) and (j0 < j1) and (j1 < i1): # I contains J
-        overlapFound = True
-        new0 = i0
-        new1 = i1
-    elif (j0 < i0) and (i0 < i1) and (i1 < j1): # J contains I
-        overlapFound = True
-        new0 = j0
-        new1 = j1
-    elif (i0 == j0) and (i1 == j1): # I and J identical
-        overlapFound = True
-        new0 = i0
-        new1 = i1
-    elif (i0 == j0) and (i1 < j1): # I and J identical start, but J contains I
-        overlapFound = True
-        new0 = i0
-        new1 = j1
-    elif (i0 == j0) and (j1 < i1): # I and J identical start, but I contains J
-        overlapFound = True
-        new0 = i0
-        new1 = i1
-    elif (i1 == j1) and (i0 < j0): # I and J identical end, but J contains I
-        overlapFound = True
-        new0 = i0
-        new1 = j1
-    elif (i1 == j1) and (j0 < i0): # I and J identical end, but I contains J
-        overlapFound = True
-        new0 = i0
-        new1 = i1
-    if overlapFound:
+    #print(rangeList)
+    #print("Merging [" + str(i0) + ", " + str(i1) + "] with [" + str(j0) + ", " + str(j1) + "]")
+    new0 = min(i0,i1,j0,j1)
+    new1 = max(i0,i1,j0,j1)
+    canMerge = True
+    # I < J: we cannot merge if i0 < i1 < j0 < j1 and i1 < j0 - 1, analogous for J < I
+    if ((i0 < i1) and (i1 < j0) and (j0 < j1) and (i1 < (j0-1))) or ((j0 < j1) and (j1 < i0) and (i0 < i1) and (j1 < (i0-1))):
+        canMerge = False
+    if canMerge:
         del rangeList[j]
         del rangeList[i]
         rangeList.append([new0, new1])
-    return overlapFound
+    #print(rangeList)
+    #print('')
+    return canMerge
 
 def mergeRangeList(rangeList):
     iterI = 0
     iterJ = 1
     while (iterI < iterJ):
-        if (iterJ == len(rangeList)):
+        if iterJ < len(rangeList): # make sure to not be out of bound
+           merged = mergeRanges(iterI, iterJ, rangeList) # try to merge current two ranges
+        # iterator handling to compare each pair of ranges
+        if (iterJ == len(rangeList)): # secondary iterator reached end of list
             iterI += 1
-            iterJ = min(len(rangeList),iterI+1)
-        elif not mergeRanges(iterI, iterJ, rangeList):
-            iterJ += 1
+            iterJ = min(len(rangeList), iterI+1) # restart secondary iterator at primary+1 or keep at end of list if exceeded to ensure iterI==iterJ
         else:
+            iterJ += 1
+        if merged: # successful merge changes list structure -> reset iteration
             iterI = 0
             iterJ = 1
+    print(rangeList)
     print(len(rangeList))
 
 mergeRangeList(mergeLimits)
