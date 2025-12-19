@@ -10,6 +10,7 @@ def parseInput(inputFile):
             inputList.append(line[:-1])
         else:
             inputList.append(line) # last line has no line break
+    return inputList
 
 input1 = parseInput(file1)
 input2 = parseInput(file2)
