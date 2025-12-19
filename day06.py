@@ -68,5 +68,42 @@ problemSum2 = 0
 for problem in problemList2:
     problemSum2 += solveProblem(problem)
 
-print("The grand total in the test data is " + str(problemSum1) + ".")
-print("The grand total in the challenge is " + str(problemSum2) + ".")
+print("The grand total in the test data is " + str(problemSum1))
+print("The grand total in the challenge is " + str(problemSum2) + "\n")
+
+def parseCephalopodProblem(inputList):
+    outputList = [[]]
+    outIndex = 0
+    lineLength = len(inputList[0])
+    for i in range(lineLength):
+        currIndex = lineLength - i - 1
+        currNum = ''
+        currSym = ''
+        for line in inputList:
+            if not (line[currIndex] == ' '): #if not space
+                if not ((line[currIndex] == '*') or (line[currIndex] == '+')): # and not operator
+                    currNum += line[currIndex] # add character to current Number
+                else: # if operator
+                    currSym = line[currIndex]
+        if (currNum == '' and currSym == ''):
+            outIndex += 1
+            outputList.append([])
+        elif not (currSym == ''):
+            outputList[outIndex].append(currNum)
+            outputList[outIndex].append(currSym)
+        else:
+            outputList[outIndex].append(currNum)
+    return outputList
+
+cephProblemList1 = (parseCephalopodProblem(input1))
+cephProblemList2 = (parseCephalopodProblem(input2))
+
+cephProblemSum1 = 0
+for cephProblem in cephProblemList1:
+    cephProblemSum1 += solveProblem(cephProblem)
+cephProblemSum2 = 0
+for cephProblem in cephProblemList2:
+    cephProblemSum2 += solveProblem(cephProblem)
+
+print("The grand total in the cephalopod test data is " + str(cephProblemSum1))
+print("The grand total in the cephalopod challenge is " + str(cephProblemSum2))
