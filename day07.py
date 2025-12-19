@@ -34,13 +34,20 @@ def traceBeam(input):
                     beams.append(charNr)
             elif char == '.':
                 if contains(charNr, trace[lineNr-1]):
-                    beams.append(charNr)
+                    if not contains(charNr, beams):
+                        beams.append(charNr)
             elif char == '^':
                 if contains(charNr, trace[lineNr-1]):
-                    beams.append(charNr-1)
-                    beams.append(charNr+1)
+                    if not contains(charNr-1, beams):
+                        beams.append(charNr-1)
+                    if not contains(charNr+1, beams):
+                        beams.append(charNr+1)
         trace.append(beams)
-    return trace
+        cleanTrace = []
+        for i in range(len(trace)):
+            if i % 2 == 0:
+                cleanTrace.append(trace[i])
+    return cleanTrace
 
 def countSplits(trace):
     splits = 0
@@ -55,3 +62,23 @@ trace2 = traceBeam(input2)
 
 print("Splits with test data: " + str(countSplits(trace1)))
 print("Splits with challenge: " + str(countSplits(trace2)) + '\n')
+
+def areNeighbors(intA, intB):
+    if (intA == intB+1) or (intA+1 == intB):
+        return True
+    else:
+        return False
+
+def getMagnitudes(trace): # magnitude of a single traceline goes up if two timelines merge there
+    magnitudes = []
+    for step in trace:
+        magnitudes.append([0]*len(step))
+    magnitudes[0] = [1]
+    for stepNr in range(1, len(trace)):
+        step = trace[stepNr]
+        prevStep = trace[stepNr-1]
+        
+    return magnitudes
+
+print(trace1)
+print(getMagnitudes(trace1))
