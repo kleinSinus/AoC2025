@@ -24,7 +24,6 @@ def contains(integer, inputList):
 # traces a tachyon beam and returns the number of splits
 def traceBeam(input):
     trace = []
-    splitNum = 0
     for lineNr in range(len(input)):
         beams = []
         line = input[lineNr]
@@ -40,12 +39,19 @@ def traceBeam(input):
                 if contains(charNr, trace[lineNr-1]):
                     beams.append(charNr-1)
                     beams.append(charNr+1)
-                    splitNum += 1
         trace.append(beams)
-    return splitNum
+    return trace
 
-splits1 = traceBeam(input1)
-splits2 = traceBeam(input2)
+def countSplits(trace):
+    splits = 0
+    for step in range(len(trace)-1):
+        for pos in trace[step]:
+            if not contains(pos,trace[step+1]): # directly after a split, the split position is not in the trace
+                splits += 1
+    return splits
 
-print("Splits with test data: " + str(splits1))
-print("Splits with challenge: " + str(splits2) + '\n')
+trace1 = traceBeam(input1)
+trace2 = traceBeam(input2)
+
+print("Splits with test data: " + str(countSplits(trace1)))
+print("Splits with challenge: " + str(countSplits(trace2)) + '\n')
