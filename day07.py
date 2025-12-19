@@ -69,15 +69,17 @@ def areNeighbors(intA, intB):
     else:
         return False
 
-def getMagnitudes(trace): # magnitude of a single traceline goes up if two timelines merge there
+def getMagnitudes(trace): # magnitude of a single traceline goes up where two timelines merge
     magnitudes = []
     for step in trace:
-        magnitudes.append([0]*len(step))
-    magnitudes[0] = [1]
+        magnitudes.append([1]*len(step))
     for stepNr in range(1, len(trace)):
-        step = trace[stepNr]
         prevStep = trace[stepNr-1]
-        
+        currStep = trace[stepNr]
+        for beamNr in range(len(currStep)):
+            currBeam = trace[stepNr][beamNr]
+            if contains(currBeam-1, prevStep) and contains(currBeam+1, prevStep): # merge happens with two possible parent 
+                magnitudes[stepNr][beamNr] += 1
     return magnitudes
 
 print(trace1)
