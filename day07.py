@@ -63,24 +63,54 @@ trace2 = traceBeam(input2)
 print("Splits with test data: " + str(countSplits(trace1)))
 print("Splits with challenge: " + str(countSplits(trace2)) + '\n')
 
-def areNeighbors(intA, intB):
-    if (intA == intB+1) or (intA+1 == intB):
-        return True
-    else:
-        return False
+def calcCurrMags(prevBeams, currBeams, prevMags):
+    newMags = [0] * len(currBeams)
+    for beamNr in range(len(currBeams)-1):
+        currBeam = currBeams[beamNr]
+        nextBeam = currBeams[beamNr+1]
+        if (nextBeam-currBeam == 2): # possible split children
+            parentCandidate = currBeam + 1
+            if contains(parentCandidate, prevBeams): # parent established
+                for i in range(len(prevBeams)): # look up parents magnitude
+                    if prevBeams[i] == parentCandidate:
+                        parentMag = prevMags[i]
+                        newMags[beamNr] += parentMag # and add it to children
+                        newMags[beamNr+1] += parentMag
+        if contains(currBeam, prevBeams): # direct descent
+            parent = currBeam
+            for i in range(len(prevBeams)): # look up parent mag
+                if prevBeams[i] == parent:
+                    parentMag = prevMags[i]
+                    newMags[beamNr] += parentMag # and add it to child
+    lastBeam = currBeams[-1]
+    if contains(lastBeam, prevBeams): # direct descent of last beam
+        parent = lastBeam
+        for i in range(len(prevBeams)): # look up parent mag
+            if prevBeams[i] == parent:
+                parentMag = prevMags[i]
+                newMags[beamNr] += parentMag # and add it to child
+    return newMags
 
 def getMagnitudes(trace): # magnitude of a single traceline goes up where two timelines merge
     magnitudes = []
-    for step in trace:
-        magnitudes.append([1]*len(step))
+    magnitudes.append([1])
     for stepNr in range(1, len(trace)):
-        prevStep = trace[stepNr-1]
-        currStep = trace[stepNr]
-        for beamNr in range(len(currStep)):
-            currBeam = trace[stepNr][beamNr]
-            if contains(currBeam-1, prevStep) and contains(currBeam+1, prevStep): # merge happens with two possible parent 
-                magnitudes[stepNr][beamNr] += 1
+        currBeamList = trace[stepNr]
+        prevBeamList = trace[stepNr-1]
+        prevMagList = magnitudes[stepNr-1]
+        newMagList = calcCurrMags(prevBeamList, currBeamList, prevMagList)
+        magnitudes.append(newMagList)
     return magnitudes
 
-print(trace1)
-print(getMagnitudes(trace1))
+#print(trace1)
+#print(getMagnitudes(trace1))
+
+def getTimelinesCount(trace):
+    count = 0
+    lastMags = getMagnitudes(trace)[-1]
+    for mag in lastMags:
+        count += mag
+    return count
+
+print("Timlines counted in test data: " + str(getTimelinesCount(trace1)))
+print("Timlines counted in challenge: " + str(getTimelinesCount(trace2)))
