@@ -112,5 +112,5 @@ def getTimelinesCount(trace):
         count += mag
     return count
 
-print("Timlines counted in test data: " + str(getTimelinesCount(trace1)))
-print("Timlines counted in challenge: " + str(getTimelinesCount(trace2)))
+print("Timelines counted in test data: " + str(getTimelinesCount(trace1)))
+print("Timelines counted in challenge: " + str(getTimelinesCount(trace2)))
