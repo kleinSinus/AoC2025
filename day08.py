@@ -17,13 +17,21 @@ def parseInput(inputFile):
 input1 = parseInput(file1)
 input2 = parseInput(file2)
 
-junctionBoxCoords = []
+junctionBoxCoords1 = []
 for line in input1:
     coordStrings = line.split(',')
     coords = []
     for coordString in coordStrings:
         coords.append(int(coordString))
-    junctionBoxCoords.append(coords)
+    junctionBoxCoords1.append(coords)
+
+junctionBoxCoords2 = []
+for line in input2:
+    coordStrings = line.split(',')
+    coords = []
+    for coordString in coordStrings:
+        coords.append(int(coordString))
+    junctionBoxCoords2.append(coords)
 
 def euklideanDist3D(coordA, coordB):
     xDiffSquared = (coordA[0] - coordB[0])**2
@@ -31,7 +39,7 @@ def euklideanDist3D(coordA, coordB):
     zDiffSquared = (coordA[2] - coordB[2])**2
     return math.sqrt(xDiffSquared + yDiffSquared + zDiffSquared)
 
-def getLeastDistancePair(coordList):
+def getMinDistancePair(coordList):
     numCandidates = len(coordList)
     candidates = [[],[]]
     if numCandidates < 2:
@@ -52,4 +60,4 @@ def getLeastDistancePair(coordList):
 
 
 
-print(getLeastDistancePair(junctionBoxCoords))
+print(getMinDistancePair(junctionBoxCoords))
