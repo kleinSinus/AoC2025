@@ -17,6 +17,42 @@ def parseInput(inputFile):
 input1 = parseInput(file1)
 input2 = parseInput(file2)
 
+class Junction:
+    def __init__(self, position):
+        self.position = position
+    def __str__(self):
+        return f"{self.position}"
+
+class Circuit:
+    def __init__(self, junction):
+        self.junctions = [junction]
+    def __str__(self):
+        circOut = "Circuit of length " + str(len(self.junctions)) + "\nWith junctions at \n"
+        for junction in self.junctions:
+            circOut += "    " + str(junction)
+        return circOut
+    def contains(self, junction):
+        for item in self.junctions:
+            if (item[0] == junction[0]) and (item[1] == junction[1]) and (item[2] == junction[2]):
+                return True
+        return False
+    def connect(self, junction):
+        if not self.contains(junction):
+            self.junctions.append(junction)
+
+circuits = []
+for line in input1:
+    coordStrings = line.split(',')
+    coords = []
+    for coordString in coordStrings:
+        coords.append(int(coordString))
+    newJunction = Junction(coords)
+    newCircuit = Circuit(newJunction)
+    circuits.append(newCircuit)
+
+for circuit in circuits:
+    print(circuit)
+
 junctionBoxCoords1 = []
 for line in input1:
     coordStrings = line.split(',')
@@ -60,4 +96,4 @@ def getMinDistancePair(coordList):
 
 
 
-print(getMinDistancePair(junctionBoxCoords))
+print(getMinDistancePair(junctionBoxCoords1))
